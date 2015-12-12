@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace QM.Properties
+namespace QMapp.Properties
 {
 
 
