@@ -111,6 +111,29 @@ namespace QMapp
             return zeroCube;
         }
 
+        //Замена на Х
+        private string ChangeToX(string binary1, string binary2)
+        {
+            string binaryX = "";
+            int sameCount = 0;
+            for (int liter = 0; liter < binary1.Length; liter++)
+            {
+                if (binary1[liter] == binary2[liter])
+                    binaryX += binary1[liter];
+                else
+                {
+                    binaryX += "X";
+                    sameCount++;
+                }
+            }
+            if (sameCount != 1)
+            {
+                binaryX = "";
+            }
+
+            return binaryX;
+        }
+
         //Формирование 1-куба
         private List<string> OneCube(List<List<string>> listOfLists, Dictionary<string,int> dict)
         {
@@ -122,19 +145,8 @@ namespace QMapp
                     foreach (string listItem_i in listOfLists[i])
                         foreach(string listItem_j in listOfLists[j])
                         {
-                            string newNumb = "";
-                            int sameCount = 0;
-                            for (int liter = 0; liter < listItem_i.Length; liter++)
-                            {
-                                if (listItem_i[liter] == listItem_j[liter])
-                                    newNumb += listItem_i[liter];
-                                else
-                                {
-                                    newNumb += "X";
-                                    sameCount++;
-                                }
-                            }
-                            if (sameCount == 1)
+                            string newNumb = ChangeToX(listItem_i, listItem_j);
+                            if (newNumb != "")
                             {
                                 oneCube.Add(newNumb);
                                 dict[listItem_i] += 1;
@@ -167,18 +179,42 @@ namespace QMapp
             return oneCubeGroups;
         }
 
+        //Формирование 2-куба
+        private List<string> TwoCube(List<List<string>> listOfLists, Dictionary<string, int> dict)
+        {
+            List<string> twoCube = new List<string>();
+
+            foreach (List<string> list in listOfLists)
+            {
+                for(int i = 0; i < list.Count - 1; i++)
+                    for(int j = 1; j < list.Count; j++)
+                    {
+                        string newNumb = ChangeToX(list[i], list[j]);
+                        if (newNumb != "" && !(twoCube.Contains(newNumb)))
+                        {
+                            twoCube.Add(newNumb);
+                            dict[list[i]] += 1;
+                            dict[list[j]] += 1;
+                        }
+                    }
+            }
+
+            return twoCube;
+        }
+
         //Функция счета
         public void count()
         {
             List<string> binaryListFilled = FillZero(binaryList);
-            Dictionary<string, int> dictBinary = ToDict(binaryListFilled);
+            Dictionary<string, int> dictBinaryZeroCube = ToDict(binaryListFilled);
             List<List<string>> zeroCubeGroups = ZeroCubes(binaryListFilled);
-            List<string> oneCube = OneCube(zeroCubeGroups, dictBinary);
+            List<string> oneCube = OneCube(zeroCubeGroups, dictBinaryZeroCube);
             List<List<string>> oneCubeGroups = OneCubeGroups(oneCube);
-            foreach (List<string> a in oneCubeGroups)
-            {
-                result += string.Join(",", a) + "\n";
-            }
+            Dictionary<string, int> dictBinaryOneCube = ToDict(oneCube);
+            List<string> twoCube = TwoCube(oneCubeGroups, dictBinaryOneCube);
+            result += string.Join("+", twoCube) + "\n";
+            result += string.Join("\n",dictBinaryOneCube.Select(x => x.Key + "=" + x.Value).ToArray());
+            //List<string> kpiCube = KPICube(twoCube,dictBinaryOneCube,dictBinaryZeroCube);
 
         }
 
