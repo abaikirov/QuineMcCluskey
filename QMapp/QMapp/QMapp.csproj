@@ -54,7 +54,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuineMc.cs" />
-    <Compile Include="StringToList.cs" />
+    <Compile Include="HelperClass.cs" />
     <EmbeddedResource Include="formCount.resx">
       <DependentUpon>formCount.cs</DependentUpon>
     </EmbeddedResource>

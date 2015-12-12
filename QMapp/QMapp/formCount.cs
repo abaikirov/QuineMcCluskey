@@ -12,6 +12,9 @@ namespace QMapp
 {
     public partial class formCount : Form
     {
+
+        QuineMc quineMc = new QuineMc();
+
         public formCount()
         {
             InitializeComponent();
@@ -33,11 +36,48 @@ namespace QMapp
                 labelError.Text = "";
                 string numbs = textBoxNumbs.Text;
 
-                List<Int32> Numbs = StringToList.Convert(numbs);
-
-                QuineMc quineMc = new QuineMc(Numbs);
+                List<Int32> Numbs = HelperClass.Convert(numbs);
+                quineMc.SetList(Numbs);
+                
                 quineMc.count();
                 richTextBoxResult.Text = quineMc.Result();
+                
+            }
+        }
+
+        private void buttonKPI_Click(object sender, EventArgs e)
+        {
+            var kpi = quineMc.GetKPI();
+            if (kpi.Count != 0)
+                richTextBoxResult.Text = string.Join(",", kpi) + "\n";
+            else
+            {
+                labelBtnErrorLeft.Text = "!!!Press this button ->";
+                labelBtnErrorUp.Text = "!!!Press this button\n            |\n           \\/";
+            }
+        }
+
+        private void buttonYMin_Click(object sender, EventArgs e)
+        {
+            var kpi = quineMc.GetKPI();
+            if (kpi.Count != 0)
+                richTextBoxResult.Text = string.Join(",", kpi) + "\n";
+            else
+            {
+                labelBtnErrorLeft.Text = "!!!Press this button ->";
+                labelBtnErrorUp.Text = "!!!Press this button\n            |\n           \\/";
+            }
+        }
+
+        private void buttonMinTable_Click(object sender, EventArgs e)
+        {
+            var kpi = quineMc.GetKPI();
+            if (kpi.Count != 0)
+                richTextBoxResult.Text = string.Join(",", kpi) + "\n";
+            else
+            {
+                labelBtnErrorLeft.Text = "!!!Press this button ->";
+                labelBtnErrorUp.Text = "!!!Press this button\n            |\n           \\/";
             }
         }
     }
