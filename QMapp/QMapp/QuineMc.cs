@@ -174,13 +174,6 @@ namespace QMapp
             Dictionary<string, int> dictBinary = ToDict(binaryListFilled);
             List<List<string>> zeroCubeGroups = ZeroCubes(binaryListFilled);
             List<string> oneCube = OneCube(zeroCubeGroups, dictBinary);
-            foreach (List<string> a in zeroCubeGroups)
-            {
-                result += string.Join(",", a) + "\n";
-            }
-
-            result += string.Join(",", oneCube) + "\n";
-
             List<List<string>> oneCubeGroups = OneCubeGroups(oneCube);
             foreach (List<string> a in oneCubeGroups)
             {
