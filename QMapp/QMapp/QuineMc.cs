@@ -146,6 +146,27 @@ namespace QMapp
             return oneCube;
         }
 
+        //Формирование 1-кубов
+        private List<List<string>> OneCubeGroups(List<string> listString)
+        {
+            List<List<string>> oneCubeGroups = new List<List<string>>();
+
+            for(int i = 0; i < listString[0].Length; i++)
+            {
+                List<string> oneCube = new List<string>();
+                foreach (string listItem in listString)
+                {
+                    if (listItem[i] == 'X')
+                    {
+                        oneCube.Add(listItem);
+                    }
+                }
+                oneCubeGroups.Add(oneCube);
+            }
+
+            return oneCubeGroups;
+        }
+
         //Функция счета
         public void count()
         {
@@ -153,13 +174,18 @@ namespace QMapp
             Dictionary<string, int> dictBinary = ToDict(binaryListFilled);
             List<List<string>> zeroCubeGroups = ZeroCubes(binaryListFilled);
             List<string> oneCube = OneCube(zeroCubeGroups, dictBinary);
-
             foreach (List<string> a in zeroCubeGroups)
             {
                 result += string.Join(",", a) + "\n";
             }
 
             result += string.Join(",", oneCube) + "\n";
+
+            List<List<string>> oneCubeGroups = OneCubeGroups(oneCube);
+            foreach (List<string> a in oneCubeGroups)
+            {
+                result += string.Join(",", a) + "\n";
+            }
 
         }
 
