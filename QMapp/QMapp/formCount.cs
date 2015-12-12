@@ -15,17 +15,30 @@ namespace QMapp
         public formCount()
         {
             InitializeComponent();
+            textBoxNumbs.Text = "1 2 3 5 7 8 10 12 13 14";
         }
 
         private void buttonCount_Click(object sender, EventArgs e)
         {
-            string numbs = textBoxNumbs.Text;
+            bool err = false;
 
-            List<Int32> Numbs = StringToList.Convert(numbs);
+            if (textBoxNumbs.Text.Length == 0)
+            {
+                labelError.Text = "Input arguments!!!";
+                err = true;
+            }
 
-            QuineMc quineMc = new QuineMc(Numbs);
-            quineMc.count();
-            richTextBoxResult.Text = quineMc.Result();
+            if (!err)
+            {
+                labelError.Text = "";
+                string numbs = textBoxNumbs.Text;
+
+                List<Int32> Numbs = StringToList.Convert(numbs);
+
+                QuineMc quineMc = new QuineMc(Numbs);
+                quineMc.count();
+                richTextBoxResult.Text = quineMc.Result();
+            }
         }
     }
 }
