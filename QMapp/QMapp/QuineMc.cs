@@ -255,11 +255,26 @@ namespace QMapp
                         select dicts;
             foreach (KeyValuePair<string,int> key in keys)
             {
-                kpiCube.Add(key.Key);
+                if (!kpiCube.Contains(key.Key))
+                    kpiCube.Add(key.Key);
             }
 
             
 
+        }
+
+        private bool LoopChecker(Dictionary<string, int> dict)
+        {
+            bool checker = true;
+
+            var values = dict.Values.ToArray();
+
+            foreach (var value in values)
+            {
+                if (value != 0) checker = true;
+                else checker = false;
+            }
+            return checker;
         }
 
         //Функция счета
@@ -281,14 +296,15 @@ namespace QMapp
 
 
             var loopTwoCube = twoCube;
-            bool x_endless = false;
+            bool x_endless = true;
+
             while (x_endless)
             {
                 var loopCube = OneCubeGroups(loopTwoCube);
                 var dictLoopCube = ToDict(loopTwoCube);
                 loopTwoCube = TwoCube(loopCube, dictLoopCube);
                 KPICheker(dictLoopCube);
-
+                x_endless = LoopChecker(dictLoopCube);
             }
 
 
