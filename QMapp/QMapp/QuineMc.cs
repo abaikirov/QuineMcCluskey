@@ -175,6 +175,7 @@ namespace QMapp
 
             int countX = listString[0].Where(x => x == '\u0058').Count();
             int combination = HelperClass.Combination(listString[0].Length, countX);
+            List<List<int>> comboXindexs = HelperClass.CombinationList(listString[0].Length, countX);
 
             foreach (var comboXindex in comboXindexs)
             {

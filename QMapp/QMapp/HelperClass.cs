@@ -42,25 +42,40 @@ namespace QMapp
 
         public static int Combination(int n, int m)
         {
-            int combination = FactorialSpeed(n,m) / Factorial(m);
+            int combination = FactorialSpeed(n,m) / Factorial(n - m);
             return combination;
         }
 
         public static List<List<int>> CombinationList(int n, int m)
         {
             List<List<int>> combinationList = new List<List<int>>();
+            List<List<int>> combinationList2 = new List<List<int>>();
 
-            int combination = Combination(n, m);
+            
+                
+            List<int> comboItem2 = new List<int>();
 
-            for (int i = 0; i < combination; i++)
+            for (int toComboEnd = n - m, toComboStart = 0; toComboStart < n - toComboEnd; toComboStart++)
+            {
+                for (int X = toComboStart; X < toComboEnd; X++)
+                {
+                    comboItem2.Add(X);
+                }
+            }
+
+            //for (int tocombo = 0; tocombo < n - 3; tocombo++)
+            //    for(int tocombo2 = tocombo + 1; tocombo2 < n - 2; tocombo2++)
+            //        for(int tocombo3 = tocombo2 + 1; tocombo3 < n - 1; tocombo3++)
+            //            for(int tocombo4 = tocombo3 + 1; tocombo4 < n; tocombo4++)
+
+            combinationList2.Add(comboItem2);
+           
+
+            for (int len = 0; len < combinationList2[0].Count; len++)
             {
                 List<int> comboItem = new List<int>();
-
-                for (int toCombo = 0; toCombo < n - 3; toCombo++)
-                    for(int toCombo2 = toCombo + 1; toCombo2 - 2 < n; toCombo2++)
-                        for(int toCombo3 = toCombo2 + 1; toCombo3 - 1 < n; toCombo3++)
-                            for(int toCombo4 = toCombo3 + 1; toCombo4 < n; toCombo4++)
-
+                foreach (List<int> comboItemIn in combinationList2)
+                    comboItem.Add(comboItemIn[len]);
                 combinationList.Add(comboItem);
             }
 
