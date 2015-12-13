@@ -168,6 +168,31 @@ namespace QMapp
             return oneCube;
         }
 
+        private List<List<int>> CombinationList(int n, int m)
+        {
+            List<List<int>> combinationList = new List<List<int>>();
+
+            int end = (int)System.Math.Pow((double)2, (double)n) - 1;
+            List<int> decNumbs = new List<int>();
+            for (int x = 1; x < end; x++)
+            {
+                decNumbs.Add(x);
+            }
+            List<string> binaryListFilled = FillZero(ToBinary(decNumbs));
+            for (int binary = 0; binary < binaryListFilled.Count; binary++)
+            {
+                List<int> BinaryX = new List<int>();
+                for (int character = 0; character < binaryListFilled[binary].Length; character++)
+                {
+                    if (binaryListFilled[binary][character] == '\u0031')
+                        BinaryX.Add(character);
+                }
+                if (BinaryX.Count == m)
+                    combinationList.Add(BinaryX);
+            }
+            return combinationList;
+        }
+
         //Формирование 1-кубов
         private List<List<string>> OneCubeGroups(List<string> listString)
         {
@@ -175,25 +200,24 @@ namespace QMapp
 
             int countX = listString[0].Where(x => x == '\u0058').Count();
             int combination = HelperClass.Combination(listString[0].Length, countX);
-            List<List<int>> comboXindexs = HelperClass.CombinationList(listString[0].Length, countX);
+            List<List<int>> comboXindexs = CombinationList(listString[0].Length, countX);
 
-            foreach (var comboXindex in comboXindexs)
+            List<string> oneCube = new List<string>();
+            foreach (string listItem in listString)
             {
-                List<string> oneCube = new List<string>();
-                foreach (string listItem in listString)
-                {
-                    List<int> Xindexs = new List<int>();
-                    for (int Xindex = 0; Xindex < listItem.Length; Xindex++)
-                        if (listItem[Xindex] == 'X')
-                            Xindexs.Add(Xindex);
-
-                    if (Xindexs == comboXindex)
+                List<int> Xindexs = new List<int>();
+                for (int Xindex = 0; Xindex < listItem.Length; Xindex++)
+                    if (listItem[Xindex] == '\u0058')
+                        Xindexs.Add(Xindex);
+                foreach (var comboXindex in comboXindexs)
+                    if (Xindexs.All(comboXindex.Contains))
                     {
                         oneCube.Add(listItem);
                     }
-                }
-                oneCubeGroups.Add(oneCube);
             }
+            
+            oneCubeGroups.Add(oneCube);
+            
 
             return oneCubeGroups;
         }
@@ -248,12 +272,12 @@ namespace QMapp
             List<string> oneCube = OneCube(zeroCubeGroups, dictBinaryZeroCube);
             KPICheker(dictBinaryZeroCube);
 
+            
 
             List<List<string>> oneCubeGroups = OneCubeGroups(oneCube);
             Dictionary<string, int> dictBinaryOneCube = ToDict(oneCube);
             List<string> twoCube = TwoCube(oneCubeGroups, dictBinaryOneCube);
             KPICheker(dictBinaryOneCube);
-
 
 
             var loopTwoCube = twoCube;
