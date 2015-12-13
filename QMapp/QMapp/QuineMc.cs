@@ -11,6 +11,8 @@ namespace QMapp
         private List<int> list = new List<int>();
         private List<string> binaryList = new List<string>();
         private List<string> kpiCube = new List<string>();
+        private List<string> implicaty = new List<string>();
+        private Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
         private string result;
         public string Result()
         {
@@ -35,6 +37,16 @@ namespace QMapp
         public List<string> GetKPI()
         {
             return kpiCube;
+        }
+
+        public List<string> GetImplicaty()
+        {
+            return implicaty;
+        }
+
+        public Dictionary<string, List<string>> GetMinTable()
+        {
+            return minTable;
         }
 
         //Перевод из десятичной системы в двоичную
@@ -258,11 +270,9 @@ namespace QMapp
                 if (!kpiCube.Contains(key.Key))
                     kpiCube.Add(key.Key);
             }
-
-            
-
         }
 
+        //Функция проверки на окончание формирования новых кубов
         private bool LoopChecker(Dictionary<string, int> dict)
         {
             bool checker = true;
@@ -275,6 +285,41 @@ namespace QMapp
                 else checker = false;
             }
             return checker;
+        }
+
+        //Формирование мин таблицы
+        private Dictionary<string,List<string>> MinTable (List<string> implicaty , List<string> numbs)
+        {
+            Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
+
+            foreach (var impli in implicaty)
+            {
+                List<string> impliValues = new List<string>();
+                foreach (var numb in numbs)
+                {
+                    string currNumb = "";
+                    bool err = false;
+                    for(int character = 0; character < impli.Length; character++)
+                    {
+                        if (impli[character] == '\u0058') continue;
+                        if (impli[character] == numb[character]) currNumb = numb;
+                        else
+                        {
+                            currNumb = "";
+                            err = true;
+                            break;
+                        }
+                    }
+                    if (err) continue;
+                    else
+                    {
+                        impliValues.Add(currNumb);
+                    }
+                }
+                minTable.Add(impli, impliValues);
+            }
+
+            return minTable;
         }
 
         //Функция счета
@@ -293,6 +338,7 @@ namespace QMapp
             Dictionary<string, int> dictBinaryOneCube = ToDict(oneCube);
             List<string> twoCube = TwoCube(oneCubeGroups, dictBinaryOneCube);
             KPICheker(dictBinaryOneCube);
+            implicaty = twoCube;
 
 
             var loopTwoCube = twoCube;
@@ -303,10 +349,11 @@ namespace QMapp
                 var loopCube = OneCubeGroups(loopTwoCube);
                 var dictLoopCube = ToDict(loopTwoCube);
                 loopTwoCube = TwoCube(loopCube, dictLoopCube);
+                if (loopTwoCube.Count != 0) implicaty = loopTwoCube;
                 KPICheker(dictLoopCube);
                 x_endless = LoopChecker(dictLoopCube);
             }
-
+            minTable = MinTable(implicaty, binaryListFilled);
 
         }
 

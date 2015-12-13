@@ -25,6 +25,9 @@ namespace QMapp
         {
             bool err = false;
 
+            labelBtnErrorLeft.Text = "";
+            labelBtnErrorUp.Text = "";
+
             if (textBoxNumbs.Text.Length == 0)
             {
                 labelError.Text = "Input arguments!!!";
@@ -71,9 +74,22 @@ namespace QMapp
 
         private void buttonMinTable_Click(object sender, EventArgs e)
         {
-            var kpi = quineMc.GetKPI();
-            if (kpi.Count != 0)
-                richTextBoxResult.Text = string.Join(",", kpi) + "\n";
+            var minTable = quineMc.GetMinTable();
+            if (minTable.Count != 0)
+                foreach (var pair in minTable)
+                    richTextBoxResult.Text += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+            else
+            {
+                labelBtnErrorLeft.Text = "!!!Press this button ->";
+                labelBtnErrorUp.Text = "!!!Press this button\n            |\n           \\/";
+            }
+        }
+
+        private void buttonImplicaty_Click(object sender, EventArgs e)
+        {
+            var implicaty = quineMc.GetImplicaty();
+            if (implicaty.Count != 0)
+                richTextBoxResult.Text = string.Join(",", implicaty) + "\n";
             else
             {
                 labelBtnErrorLeft.Text = "!!!Press this button ->";
