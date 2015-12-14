@@ -8,6 +8,18 @@ namespace QMapp
 {
     class HelperClass
     {
+
+        public List<int> list = new List<int>();
+        public List<string> binaryList = new List<string>();
+        public List<string> binaryListFilled = new List<string>();
+        public List<string> kpiCube = new List<string>();
+        public List<string> implicaty = new List<string>();
+        public Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> maxTable = new Dictionary<string, List<string>>();
+        public List<string> yeff = new List<string>();
+        public List<string> Y = new List<string>();
+        public string result = "";
+
         public static List<int> Convert(string str)
         {
             List<int> list = new List<int>();

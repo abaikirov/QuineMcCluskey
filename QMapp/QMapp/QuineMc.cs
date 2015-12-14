@@ -10,10 +10,54 @@ namespace QMapp
     {
         private List<int> list = new List<int>();
         private List<string> binaryList = new List<string>();
+        private List<string> binaryListFilled = new List<string>();
         private List<string> kpiCube = new List<string>();
         private List<string> implicaty = new List<string>();
         private Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
-        private string result;
+        private Dictionary<string, List<string>> maxTable = new Dictionary<string, List<string>>();
+        private List<string> yeff = new List<string>();
+        private List<string> Y = new List<string>();
+        private string result = "";
+
+        private void ResultForming()
+        {
+            result = "In arguments: ";
+            result += string.Join(",", list) + "\n";
+            result += "Binary presentation: ";
+            result += string.Join(",", binaryList) + "\n";
+            result += "KPI cube: ";
+            result += string.Join(",", kpiCube) + "\n";
+            if (maxTable.Count != 0)
+            {
+                result += "Table:\n";
+                foreach (var pair in maxTable)
+                    result += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+            }
+            result += "Implicaty sushestvennye: ";
+            result += string.Join(",", implicaty) + "\n";
+            if (!minTable.Keys.Contains("table"))
+                if (minTable.Count != 0)
+                {
+                    result += "Minimal table:\n";
+                    foreach (var pair in minTable)
+                        result += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+                }
+            if (yeff.Count != 0)result += "Y effectivly: " + string.Join(",", yeff) + "\n";
+            result += "Minimal function : ";
+            foreach(var func in Y)
+            {
+                result += "(";
+                for(int lit = 0;lit < func.Length; lit++)
+                {
+                    if (func[lit] == 'X') continue;
+                    if (func[lit] == '\u0031') result += "X" + Convert.ToString(lit + 1) + " + ";
+                    else result += "!X" + Convert.ToString(lit + 1) + " + ";
+                }
+                result += ") * ";
+            }
+
+        }
+
         public string Result()
         {
             return result;
@@ -47,6 +91,26 @@ namespace QMapp
         public Dictionary<string, List<string>> GetMinTable()
         {
             return minTable;
+        }
+
+        public Dictionary<string, List<string>> GetMaxTable()
+        {
+            return maxTable;
+        }
+
+        public List<string> GetBinaryListFilled()
+        {
+            return binaryListFilled;
+        }
+
+        public List<string> GetYeff()
+        {
+            return yeff;
+        }
+
+        public List<string> GetMinFunc()
+        {
+            return Y;
         }
 
         //Перевод из десятичной системы в двоичную
@@ -287,10 +351,10 @@ namespace QMapp
             return checker;
         }
 
-        //Формирование мин таблицы
-        private Dictionary<string,List<string>> MinTable (List<string> implicaty , List<string> numbs)
+        //Формирование таблицы
+        private Dictionary<string, List<string>> MaxTable(List<string> implicaty, List<string> numbs)
         {
-            Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> maxTable = new Dictionary<string, List<string>>();
 
             foreach (var impli in implicaty)
             {
@@ -299,7 +363,7 @@ namespace QMapp
                 {
                     string currNumb = "";
                     bool err = false;
-                    for(int character = 0; character < impli.Length; character++)
+                    for (int character = 0; character < impli.Length; character++)
                     {
                         if (impli[character] == '\u0058') continue;
                         if (impli[character] == numb[character]) currNumb = numb;
@@ -316,47 +380,133 @@ namespace QMapp
                         impliValues.Add(currNumb);
                     }
                 }
-                minTable.Add(impli, impliValues);
+                maxTable.Add(impli, impliValues);
             }
 
+            return maxTable;
+        }
+
+        //Формирование мин таблицы
+        private Dictionary<string,List<string>> MinTable (Dictionary<string, List<string>> maxTable , List<string> numbs)
+        {
+            Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> inTable = new Dictionary<string, List<string>>();
+            List<string> Numbs = numbs;
+
+            foreach (var numb in Numbs)
+            {
+                List<string> Xnumbs = new List<string>();
+                foreach (var line in maxTable)
+                {
+                    if (line.Value.Contains(numb)) Xnumbs.Add(line.Key);
+                }
+                inTable.Add(numb, Xnumbs);
+            }
+
+            foreach(var pair in inTable)
+            {
+                if (pair.Value.Count == 1)
+                {
+                    if (!implicaty.Contains(pair.Value.First())) implicaty.Add(pair.Value.First());
+                    Numbs.Remove(pair.Key);
+                }
+            }
+
+            foreach (var impli in implicaty)
+                foreach (var delElem in maxTable[impli])
+                    if (Numbs.Contains(delElem)) Numbs.Remove(delElem);
+
+            if (Numbs.Count != 0)
+            {
+                foreach (var pair in inTable)
+                    foreach (var num in Numbs)
+                        if (pair.Key == num)
+                        {
+                            List<string> val = new List<string>();
+                            val.Add(pair.Key);
+                            foreach (var key in pair.Value)
+                            {
+                                if (!minTable.Keys.Contains(key)) minTable.Add(key, val);
+                                else minTable[key].Add(pair.Key);
+                            }
+                        }
+            }
+            else { var list = new List<string> { "0", "1" }; minTable.Add("table", list); }
+            
+
             return minTable;
+        }
+
+        //Функция рассчета Y эффективного
+        private List<string> YeffConst (Dictionary<string, List<string>> minTable)
+        {
+            List<string> yeffConst = new List<string>();
+            Dictionary<string, List<string>> minTableInvers = new Dictionary<string, List<string>>();
+
+            foreach(var pair in minTable)
+            {
+                List<string> pairList = new List<string> { pair.Key };
+                foreach (var val in pair.Value)
+                {
+                    if (!minTableInvers.Keys.Contains(val)) minTableInvers.Add(val, pairList);
+                    else minTableInvers[val].Add(pair.Key);
+                }
+                
+            }
+
+            foreach (var pair in minTableInvers)
+            {
+                string minZeroStr = pair.Value[0];
+                int minZero = pair.Value[0].Where(x => x == '\u0030').Count();
+                foreach (var val in pair.Value)
+                    if (minZero > val.Where(x => x == '\u0030').Count()) { minZero = val.Where(x => x == '\u0030').Count(); minZeroStr = val; }
+                yeffConst.Add(minZeroStr);
+            }
+            return yeffConst;
+        }
+
+        private List<string> MinFunc (List<string> impli, List<string> yeff)
+        {
+            List<string> minFunc = new List<string>();
+
+            foreach (var implicat in impli)
+                minFunc.Add(implicat);
+            foreach (var y in yeff)
+                minFunc.Add(y);
+
+            return minFunc;
         }
 
         //Функция счета
         public void count()
         {
             binaryList = ToBinary(list);
-            List<string> binaryListFilled = FillZero(binaryList);
+            binaryListFilled = FillZero(binaryList);
             Dictionary<string, int> dictBinaryZeroCube = ToDict(binaryListFilled);
             List<List<string>> zeroCubeGroups = ZeroCubes(binaryListFilled);
             List<string> oneCube = OneCube(zeroCubeGroups, dictBinaryZeroCube);
             KPICheker(dictBinaryZeroCube);
 
-            
-
             List<List<string>> oneCubeGroups = OneCubeGroups(oneCube);
             Dictionary<string, int> dictBinaryOneCube = ToDict(oneCube);
             List<string> twoCube = TwoCube(oneCubeGroups, dictBinaryOneCube);
             KPICheker(dictBinaryOneCube);
-            implicaty = twoCube;
-
 
             var loopTwoCube = twoCube;
             bool x_endless = true;
-
             while (x_endless)
             {
                 var loopCube = OneCubeGroups(loopTwoCube);
                 var dictLoopCube = ToDict(loopTwoCube);
                 loopTwoCube = TwoCube(loopCube, dictLoopCube);
-                if (loopTwoCube.Count != 0) implicaty = loopTwoCube;
                 KPICheker(dictLoopCube);
                 x_endless = LoopChecker(dictLoopCube);
             }
-            minTable = MinTable(implicaty, binaryListFilled);
-
+            maxTable = MaxTable(kpiCube, binaryListFilled);
+            minTable = MinTable(maxTable, binaryListFilled);
+            if (!minTable.Keys.Contains("table"))yeff = YeffConst(minTable);
+            Y = MinFunc(implicaty, yeff);
+            ResultForming();
         }
-
-        
     }
 }

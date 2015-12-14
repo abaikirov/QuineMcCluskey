@@ -15,10 +15,12 @@ namespace QMapp
 
         QuineMc quineMc = new QuineMc();
 
+        
+
         public formCount()
         {
             InitializeComponent();
-            textBoxNumbs.Text = "1 2 3 5 7 8 10 12 13 14";
+            textBoxNumbs.Text = "";
         }
 
         private void buttonCount_Click(object sender, EventArgs e)
@@ -50,6 +52,7 @@ namespace QMapp
 
         private void buttonKPI_Click(object sender, EventArgs e)
         {
+            richTextBoxResult.Text = "";
             var kpi = quineMc.GetKPI();
             if (kpi.Count != 0)
                 richTextBoxResult.Text = string.Join(",", kpi) + "\n";
@@ -62,9 +65,20 @@ namespace QMapp
 
         private void buttonYMin_Click(object sender, EventArgs e)
         {
-            var kpi = quineMc.GetKPI();
-            if (kpi.Count != 0)
-                richTextBoxResult.Text = string.Join(",", kpi) + "\n";
+            richTextBoxResult.Text = "";
+            var Y = quineMc.GetMinFunc();
+            if (Y.Count != 0)
+                foreach (var func in Y)
+                {
+                    richTextBoxResult.Text += "(";
+                    for (int lit = 0; lit < func.Length; lit++)
+                    {
+                        if (func[lit] == 'X') continue;
+                        if (func[lit] == '\u0031') richTextBoxResult.Text += "X" + Convert.ToString(lit + 1) + " + ";
+                        else richTextBoxResult.Text += "!X" + Convert.ToString(lit + 1) + " + ";
+                    }
+                    richTextBoxResult.Text += ") * ";
+                }
             else
             {
                 labelBtnErrorLeft.Text = "!!!Press this button ->";
@@ -74,10 +88,15 @@ namespace QMapp
 
         private void buttonMinTable_Click(object sender, EventArgs e)
         {
+            richTextBoxResult.Text = "";
             var minTable = quineMc.GetMinTable();
             if (minTable.Count != 0)
-                foreach (var pair in minTable)
-                    richTextBoxResult.Text += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+            {
+                if (!minTable.Keys.Contains("table"))
+                    foreach (var pair in minTable)
+                        richTextBoxResult.Text += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+                else richTextBoxResult.Text += "No minTable";
+            }
             else
             {
                 labelBtnErrorLeft.Text = "!!!Press this button ->";
@@ -87,9 +106,24 @@ namespace QMapp
 
         private void buttonImplicaty_Click(object sender, EventArgs e)
         {
+            richTextBoxResult.Text = "";
             var implicaty = quineMc.GetImplicaty();
             if (implicaty.Count != 0)
                 richTextBoxResult.Text = string.Join(",", implicaty) + "\n";
+            else
+            {
+                labelBtnErrorLeft.Text = "!!!Press this button ->";
+                labelBtnErrorUp.Text = "!!!Press this button\n            |\n           \\/";
+            }
+        }
+
+        private void buttonMaxTable_Click(object sender, EventArgs e)
+        {
+            richTextBoxResult.Text = "";
+            var maxTable = quineMc.GetMaxTable();
+            if (maxTable.Count != 0)
+                foreach (var pair in maxTable)
+                    richTextBoxResult.Text += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
             else
             {
                 labelBtnErrorLeft.Text = "!!!Press this button ->";
