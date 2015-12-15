@@ -13,6 +13,7 @@ namespace QMapp
         private List<string> binaryListFilled = new List<string>();
         private List<string> kpiCube = new List<string>();
         private List<string> implicaty = new List<string>();
+        private List<string> minTableNumbs = new List<string>();
         private Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
         private Dictionary<string, List<string>> maxTable = new Dictionary<string, List<string>>();
         private List<string> yeff = new List<string>();
@@ -26,6 +27,7 @@ namespace QMapp
             binaryListFilled.Clear();
             kpiCube.Clear();
             implicaty.Clear();
+            minTableNumbs.Clear();
             minTable.Clear();
             maxTable.Clear();
             yeff.Clear();
@@ -35,29 +37,59 @@ namespace QMapp
 
         private void ResultForming()
         {
-            result = "In arguments: ";
+            result = "Входные данные: ";
             result += string.Join(",", list) + "\n";
-            result += "Binary presentation: ";
-            result += string.Join(",", binaryList) + "\n";
-            result += "KPI cube: ";
+            result += "\n\n";
+            result += "Двоичное представление: ";
+            result += string.Join(",", binaryListFilled) + "\n";
+            result += "\n\n";
+            result += "КПИ: ";
             result += string.Join(",", kpiCube) + "\n";
+            result += "\n\n";
             if (maxTable.Count != 0)
             {
-                result += "Table:\n";
+                result += "Таблица:\n";
+                result += "\t";
+                foreach (var num in binaryListFilled)
+                    result += "|" + num + "\t|";
+                result += "\n";
                 foreach (var pair in maxTable)
-                    result += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+                {
+                    result += pair.Key + "\t";
+                    foreach (var num in binaryListFilled)
+                    {
+                        if (pair.Value.Contains(num)) result += "|ok\t|";
+                        else result += "|\t|";
+                    }
+                    result += "\n";
+                }
             }
-            result += "Implicaty sushestvennye: ";
+            result += "\n\n";
+            result += "Существенные импликаты: ";
             result += string.Join(",", implicaty) + "\n";
+            result += "\n\n";
             if (!minTable.Keys.Contains("table"))
                 if (minTable.Count != 0)
                 {
-                    result += "Minimal table:\n";
+                    result += "Минимальная таблица:\n";
+                    result += "\t";
+                    foreach (var num in minTableNumbs)
+                        result += "|" + num + "\t|";
+                    result += "\n";
                     foreach (var pair in minTable)
-                        result += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+                    {
+                        result += pair.Key + "\t";
+                        foreach (var num in minTableNumbs)
+                        {
+                            if (pair.Value.Contains(num)) result += "|ok\t|";
+                            else result += "|\t|";
+                        }
+                        result += "\n";
+                    }
                 }
-            if (yeff.Count != 0)result += "Y effectivly: " + string.Join(",", yeff) + "\n";
-            result += "Minimal function : ";
+            result += "\n\n";
+            if (yeff.Count != 0)result += "Y эффективное: " + string.Join(",", yeff) + "\n";
+            result += "Минимальная функция : ";
             foreach(var func in Y)
             {
                 result += "(";
@@ -115,6 +147,11 @@ namespace QMapp
         public List<string> GetBinaryListFilled()
         {
             return binaryListFilled;
+        }
+
+        public List<string> GetMinTableNumbs()
+        {
+            return minTableNumbs;
         }
 
         public List<string> GetYeff()
@@ -415,7 +452,11 @@ namespace QMapp
         {
             Dictionary<string, List<string>> minTable = new Dictionary<string, List<string>>();
             Dictionary<string, List<string>> inTable = new Dictionary<string, List<string>>();
-            List<string> Numbs = numbs;
+            List<string> Numbs = new List<string>();
+
+            foreach (var num in numbs)
+                Numbs.Add(num);
+
 
             foreach (var numb in Numbs)
             {
@@ -442,8 +483,10 @@ namespace QMapp
 
             if (Numbs.Count != 0)
             {
+                minTableNumbs = Numbs;
                 foreach (var pair in inTable)
                     foreach (var num in Numbs)
+                    {
                         if (pair.Key == num)
                         {
                             List<string> val = new List<string>();
@@ -454,6 +497,7 @@ namespace QMapp
                                 else minTable[key].Add(pair.Key);
                             }
                         }
+                    }
             }
             else { var list = new List<string> { "0", "1" }; minTable.Add("table", list); }
             

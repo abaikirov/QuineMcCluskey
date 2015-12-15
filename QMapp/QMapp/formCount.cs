@@ -20,7 +20,7 @@ namespace QMapp
         public formCount()
         {
             InitializeComponent();
-            textBoxNumbs.Text = "";
+            textBoxNumbs.Text = "1 2 5 7 9 10 14 15";
         }
 
         private void buttonCount_Click(object sender, EventArgs e)
@@ -92,11 +92,29 @@ namespace QMapp
         {
             richTextBoxResult.Text = "";
             var minTable = quineMc.GetMinTable();
+            var minTableNumbs = quineMc.GetMinTableNumbs();
             if (minTable.Count != 0)
             {
+
                 if (!minTable.Keys.Contains("table"))
+                {
+                    richTextBoxResult.Text = "\t";
+                    foreach (var num in minTableNumbs)
+                        richTextBoxResult.Text += "|" + num + "\t|";
+                    richTextBoxResult.Text += "\n";
                     foreach (var pair in minTable)
-                        richTextBoxResult.Text += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+                    {
+                        richTextBoxResult.Text += pair.Key + "\t";
+                        foreach (var num in minTableNumbs)
+                        {
+                            if (pair.Value.Contains(num)) richTextBoxResult.Text += "|ok\t|";
+                            else richTextBoxResult.Text += "|\t|";
+                        }
+                        richTextBoxResult.Text += "\n";
+                    }
+                }
+
+
                 else richTextBoxResult.Text += "No minTable";
             }
             else
@@ -123,9 +141,24 @@ namespace QMapp
         {
             richTextBoxResult.Text = "";
             var maxTable = quineMc.GetMaxTable();
+            var TableNumbs = quineMc.GetBinaryListFilled();
             if (maxTable.Count != 0)
+            {
+                richTextBoxResult.Text = "\t";
+                foreach (var num in TableNumbs)
+                    richTextBoxResult.Text += "|" + num + "\t|";
+                richTextBoxResult.Text += "\n";
                 foreach (var pair in maxTable)
-                    richTextBoxResult.Text += pair.Key + "{" + string.Join(",", pair.Value) + "}" + "\n";
+                {
+                    richTextBoxResult.Text += pair.Key + "\t";
+                    foreach (var num in TableNumbs)
+                    {
+                        if (pair.Value.Contains(num)) richTextBoxResult.Text += "|ok\t|";
+                        else richTextBoxResult.Text += "|\t|";
+                    }
+                    richTextBoxResult.Text += "\n";
+                }
+            }
             else
             {
                 labelBtnErrorLeft.Text = "!!!Press this button ->";
