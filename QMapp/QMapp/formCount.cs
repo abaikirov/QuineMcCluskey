@@ -25,6 +25,8 @@ namespace QMapp
 
         private void buttonCount_Click(object sender, EventArgs e)
         {
+
+            quineMc.Del();
             bool err = false;
 
             labelBtnErrorLeft.Text = "";

@@ -19,6 +19,20 @@ namespace QMapp
         private List<string> Y = new List<string>();
         private string result = "";
 
+        public void Del()
+        {
+            list.Clear();
+            binaryList.Clear();
+            binaryListFilled.Clear();
+            kpiCube.Clear();
+            implicaty.Clear();
+            minTable.Clear();
+            maxTable.Clear();
+            yeff.Clear();
+            Y.Clear();
+            result = "";
+        }
+
         private void ResultForming()
         {
             result = "In arguments: ";
@@ -50,10 +64,10 @@ namespace QMapp
                 for(int lit = 0;lit < func.Length; lit++)
                 {
                     if (func[lit] == 'X') continue;
-                    if (func[lit] == '\u0031') result += "X" + Convert.ToString(lit + 1) + " + ";
-                    else result += "!X" + Convert.ToString(lit + 1) + " + ";
+                    if (func[lit] == '\u0031') result += "X" + Convert.ToString(lit + 1) + " * ";
+                    else result += "!X" + Convert.ToString(lit + 1) + " * ";
                 }
-                result += ") * ";
+                result += ") + ";
             }
 
         }
@@ -269,12 +283,22 @@ namespace QMapp
             return combinationList;
         }
 
+        private int XCount(string numb)
+        {
+            int xCount = 0;
+
+            foreach (var X in numb)
+                if (X == 'X') xCount++;
+
+            return xCount;
+        }
+
         //Формирование 1-кубов
         private List<List<string>> OneCubeGroups(List<string> listString)
         {
             List<List<string>> oneCubeGroups = new List<List<string>>();
 
-            int countX = listString[0].Where(x => x == '\u0058').Count();
+            int countX = XCount(listString[0]);
             int combination = HelperClass.Combination(listString[0].Length, countX);
             List<List<int>> comboXindexs = CombinationList(listString[0].Length, countX);
 
@@ -485,22 +509,28 @@ namespace QMapp
             Dictionary<string, int> dictBinaryZeroCube = ToDict(binaryListFilled);
             List<List<string>> zeroCubeGroups = ZeroCubes(binaryListFilled);
             List<string> oneCube = OneCube(zeroCubeGroups, dictBinaryZeroCube);
-            KPICheker(dictBinaryZeroCube);
-
-            List<List<string>> oneCubeGroups = OneCubeGroups(oneCube);
-            Dictionary<string, int> dictBinaryOneCube = ToDict(oneCube);
-            List<string> twoCube = TwoCube(oneCubeGroups, dictBinaryOneCube);
-            KPICheker(dictBinaryOneCube);
-
-            var loopTwoCube = twoCube;
-            bool x_endless = true;
-            while (x_endless)
+            if (oneCube.Count != 0)
             {
-                var loopCube = OneCubeGroups(loopTwoCube);
-                var dictLoopCube = ToDict(loopTwoCube);
-                loopTwoCube = TwoCube(loopCube, dictLoopCube);
-                KPICheker(dictLoopCube);
-                x_endless = LoopChecker(dictLoopCube);
+                KPICheker(dictBinaryZeroCube);
+
+                List<List<string>> oneCubeGroups = OneCubeGroups(oneCube);
+                Dictionary<string, int> dictBinaryOneCube = ToDict(oneCube);
+                List<string> twoCube = TwoCube(oneCubeGroups, dictBinaryOneCube);
+                KPICheker(dictBinaryOneCube);
+
+                var loopTwoCube = twoCube;
+                bool x_endless = true;
+                if (loopTwoCube.Count != 0)
+                {
+                    while (x_endless)
+                    {
+                        var loopCube = OneCubeGroups(loopTwoCube);
+                        var dictLoopCube = ToDict(loopTwoCube);
+                        loopTwoCube = TwoCube(loopCube, dictLoopCube);
+                        KPICheker(dictLoopCube);
+                        x_endless = LoopChecker(dictLoopCube);
+                    }
+                }
             }
             maxTable = MaxTable(kpiCube, binaryListFilled);
             minTable = MinTable(maxTable, binaryListFilled);
