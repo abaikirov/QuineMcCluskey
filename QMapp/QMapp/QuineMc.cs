@@ -170,7 +170,7 @@ namespace QMapp
             List<string> listString = new List<string>();
             foreach (int listElem in listInt)
             {
-                listString.Add(Convert.ToString(listElem, 2));
+                if(!listString.Contains(Convert.ToString(listElem, 2)))listString.Add(Convert.ToString(listElem, 2));
             }
             return listString;
         }
